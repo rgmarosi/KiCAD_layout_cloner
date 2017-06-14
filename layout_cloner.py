@@ -42,8 +42,10 @@ from pcbnew import *
 #You can copy the schema parsing with kipy for example from klonor-kicad if you have enough components to justify it
 #schemaTemplate = './boosterilevy/booster.sch'
 #Instead the components to be cloned are currently given manually
-templateReferences = ['U201', 'R201', 'R202']
-
+templateReferences = ['U201', 'U202', 'U203', 'D201', 'D202',  'RV201', 'TP201', 'TP202', 'TP203', 'TP204', 'TP205', 'TP206',
+                        'C201', 'C202', 'C203', 'C204', 'C205', 'C206', 'C207', 'C208', 'C209',
+                        'R201', 'R202', 'R203', 'R204', 'R205', 'R206', 'R207', 'R208', 'R209', 'R210', 'R211', 'R212', 'R213', 'R214']
+clonedSheetNumbers = [500, 600, 700, 800, 900, 1000, 1100]#not all sheets are in sequence for this case. NOTE: cannot have more than 99 elements of same type!
 #The .kicad-pcb board with a ready layout for the area to be cloned.
 #The cloned area must be surrounded by a (square) zone in the comment layer.
 #inputBoard = './boosterilevy/16x_boosteri.kicad_pcb'
@@ -53,11 +55,11 @@ templateReferences = ['U201', 'R201', 'R202']
 #to use this script within KiCad, enter the command `execfile("layout_cloner.py")` in the python console
 #place the python script in 'C:\Program Files\KiCad' if you don't want to put a path in the above command
 
-templateRefModulo = 100;	#Difference in the reference numbers between hierarchical sheet. settings allow for 1000 or 100
-templateRefStart = 200;		#Starting point of numbering in the first hierarchical sheet. 100 is the parent sheet
-move_dx = FromMM(9.75)		#Spacing between clones in x direction
-move_dy = FromMM(9.75)		#Spacing between clones in y direction
-clonesX = 4			#Number of clones in x direction
+#templateRefModulo = 100;	#Difference in the reference numbers between hierarchical sheet. settings allow for 1000 or 100
+#templateRefStart = 200;		#Starting point of numbering in the first hierarchical sheet. 100 is the parent sheet
+move_dx = FromMM(26.416)		#Spacing between clones in x direction
+move_dy = FromMM(0.0)		#Spacing between clones in y direction
+clonesX = 8			#Number of clones in x direction
 clonesY = 1			#Number of clones in y direction
 
 
@@ -73,9 +75,10 @@ for templateRef in templateReferences:							            #For each module in the
         templateReferenceNumber = (re.findall(r"\d+", templateRef)).pop(0)	#Extract reference number (as string). Will be 201, 202, etc.
 
         for i in range(0, numberOfClones-1):						        #Create list of references to be cloned of this module from the template	
-            cloneRefNumber = int(templateReferenceNumber) + (i+1)*templateRefModulo	                        #Number of the next clone
+            #cloneRefNumber = int(templateReferenceNumber) + (i+1)*templateRefModulo	                        #Number of the next clone
+            cloneRefNumber = int(templateReferenceNumber)%100 + clonedSheetNumbers[i]	                        #Number of the next clone
             cloneReferences.append(re.sub(templateReferenceNumber, "", templateRef) + str(cloneRefNumber))	#String reference of the next clone			
-        print 'Original reference: ', templateRef, ', Generated clone references', cloneReferences
+        print 'Original reference: ', templateRef, ', Generated clone reference values:', cloneReferences
 
         for counter, cloneRef in enumerate(cloneReferences):				#Move each of the clones to appropriate location
             templatePosition = templateModule.GetPosition()                 #get x,y coordinates of template module
